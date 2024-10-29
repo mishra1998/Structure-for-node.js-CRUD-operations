@@ -1,7 +1,5 @@
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
-const moment = require('moment');
-const ms = require('ms');
 
 const encryptPassword = (password, salt) => {
   const hashedPassword = crypto.pbkdf2Sync(password, Buffer.from(salt, 'base64'), 10000, 128, 'sha512').toString('base64');
@@ -31,28 +29,9 @@ const generateToken = (userId, userEmail) => {
   return { accessToken, refreshToken };
 };
 
-const signToken = async (signedPayload) => {
-  const expiresIn = '1h';
-
-  const token = jwt.sign(signedPayload, 'agileSecretKey', {
-    expiresIn,
-  });
-
-  const refreshToken = jwt.sign(signedPayload, 'agileSecretKey', {
-    expiresIn: '7d',
-  });
-
-  return {
-    token,
-    refreshToken,
-    expiresIn: moment().add(ms(expiresIn), 'milliseconds').toISOString(),
-  };
-};
-
 module.exports = {
   encryptPassword,
   makeSalt,
   generateToken,
   verifyPassword,
-  signToken,
 };

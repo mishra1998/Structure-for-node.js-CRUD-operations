@@ -1,10 +1,16 @@
 {
+  "scripts": {
+  "migrate:azure": "cross-env NODE_ENV=azure sequelize-cli db:migrate",
+  "migrate:dev": "cross-env NODE_ENV=development sequelize-cli db:migrate"
+},
   "dependencies": {
     "ajv": "^8.17.1",
     "ajv-errors": "^3.0.0",
     "ajv-formats": "^3.0.1",
     "ajv-keywords": "^5.1.0",
+    "axios": "^1.7.7",
     "express": "^4.21.0",
+    "firebase-admin": "^12.6.0",
     "generate-password": "^1.7.1",
     "jsonwebtoken": "^9.0.2",
     "lodash.camelcase": "^4.3.0",
@@ -13,11 +19,16 @@
     "ms": "^2.1.3",
     "mysql2": "^3.11.3",
     "node-2fa": "^2.0.3",
+    "node-cron": "^3.0.3",
     "nodemailer": "^6.9.15",
+    "pg": "^8.13.1",
+    "pg-hstore": "^2.3.4",
+    "qs": "^6.13.0",
     "sequelize": "^6.37.3",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "eslint": "^8.57.1",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-filenames": "^1.3.2",

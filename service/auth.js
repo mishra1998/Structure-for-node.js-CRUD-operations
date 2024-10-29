@@ -7,7 +7,7 @@ const {
 const Helper = require('../utils/helper');
 const OtpService = require('../utils/otp');
 const {
-  USER_TYPE, USER_STATUS, OTP_TYPE, LOGIN_TYPE,
+  USER_TYPE, USER_STATUS, OTP_TYPE,
 } = require('../utils/constant');
 const authentication = require('./authentication');
 const ErrorCode = require('../utils/error');
@@ -267,7 +267,7 @@ const login = async (payload) => {
     if (response) {
       const doc = Helper.convertSnakeToCamel(response.dataValues);
       const {
-        userId, status, hashedPassword, salt, systemGeneratedPassword, isMfaEnabled, mfaSecret, ...newDoc
+        userId, status, hashedPassword, salt, systemGeneratedPassword, isMfaEnabled, mfaSecret,
       } = doc;
 
       if (status === USER_STATUS.ACTIVE) {
@@ -281,17 +281,6 @@ const login = async (payload) => {
               errors: {
                 errorCode: ErrorCode['100'],
                 details: [ { name: 'isSystemGeneratedPassword', message: 'Invalid password! This password is system-generated.' } ],
-              },
-            };
-          }
-
-          if (!isMfaEnabled) {
-            await transaction.rollback();
-
-            return {
-              errors: {
-                errorCode: ErrorCode['101'],
-                details: [ { name: 'isMfaEnabled', message: 'MFA not enabled!' } ],
               },
             };
           }
@@ -347,12 +336,12 @@ const login = async (payload) => {
 
           await UserModel.update({ last_login_at: new Date() }, { where: { public_id: userId }, transaction });
 
-          const signedPayload = { ...newDoc, loginType: LOGIN_TYPE.USER_NAME_PASSWORD };
-          const { token, refreshToken, expiresIn } = await authentication.signToken(signedPayload);
+          // const signedPayload = { ...newDoc, loginType: LOGIN_TYPE.USER_NAME_PASSWORD };
+          const { accessToken, refreshToken } = await authentication.generateToken(userId, email);
 
           await transaction.commit();
 
-          return { doc: { token, expiresIn, refreshToken } };
+          return { doc: { accessToken, refreshToken } };
         }
 
         await transaction.rollback();

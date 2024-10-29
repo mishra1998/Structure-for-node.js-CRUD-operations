@@ -1,24 +1,24 @@
 const { v1: uuidV1 } = require('uuid');
-const { bank: BankModel, sequelize } = require('../models');
+const { lic: LicModel, sequelize } = require('../models');
 const Helper = require('../utils/helper');
 
 const save = async (data) => {
   try {
-    const { accountNumber, userId } = data;
+    const { policyNumber, userId } = data;
 
-    const existingBank = await BankModel.findOne({ where: { account_number: accountNumber } });
+    const existingLic = await LicModel.findOne({ where: { policy_number: policyNumber } });
 
-    if (existingBank) {
-      return { errors: [ { name: 'Bank', message: 'Account number already exists!' } ] };
+    if (existingLic) {
+      return { errors: [ { name: 'LIC', message: 'Policy Number  already exists!' } ] };
     }
 
     const publicId = uuidV1();
 
-    const bankDoc = Helper.convertCamelToSnake({
+    const licDoc = Helper.convertCamelToSnake({
       ...data, publicId, userId, created_by: userId,
     });
 
-    await BankModel.create(bankDoc);
+    await LicModel.create(licDoc);
 
     return { doc: { publicId, message: 'successfully saved.' } };
   } catch (error) {
@@ -29,7 +29,7 @@ const save = async (data) => {
 const getAll = async (payload) => {
   const { userId } = payload;
 
-  const response = await BankModel.findAll({
+  const response = await LicModel.findAll({
     attributes: { exclude: [ 'id' ] },
     where: { user_id: userId },
   });
@@ -46,7 +46,7 @@ const getAll = async (payload) => {
 const getDetailById = async (payload) => {
   const { publicId } = payload;
 
-  const response = await BankModel.findOne({
+  const response = await LicModel.findOne({
     attributes: { exclude: [ 'id' ] },
     where: { public_id: publicId },
   });
@@ -64,7 +64,7 @@ const patch = async (payload) => {
   const transaction = await sequelize.transaction();
 
   try {
-    const response = await BankModel.findOne({
+    const response = await LicModel.findOne({
       where: { public_id: publicId },
       transaction,
       lock: transaction.LOCK.UPDATE,
@@ -73,7 +73,7 @@ const patch = async (payload) => {
     if (response) {
       const doc = Helper.convertCamelToSnake(newDoc);
 
-      await BankModel.update(doc, { where: { public_id: publicId }, transaction });
+      await LicModel.update(doc, { where: { public_id: publicId }, transaction });
 
       await transaction.commit();
 
@@ -81,7 +81,7 @@ const patch = async (payload) => {
     }
     await transaction.rollback();
 
-    return { errors: [ { name: 'Bank', message: 'no record found.' } ] };
+    return { errors: [ { name: 'LIC', message: 'no record found.' } ] };
   } catch (error) {
     await transaction.rollback();
 

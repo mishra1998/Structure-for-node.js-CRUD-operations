@@ -10,8 +10,7 @@ const port = process.env.PORT || 3002;
 
 app.use(express.json());
 
-const environment = process.env.NODE_ENV || 'test';
-const dbConfig = config.DATABASE[environment];
+const dbConfig = config.DATABASE;
 const sequelize = new Sequelize(dbConfig.name, dbConfig.username, dbConfig.password, {
   host: dbConfig.options.host,
   dialect: dbConfig.options.dialect,

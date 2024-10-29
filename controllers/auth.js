@@ -143,10 +143,9 @@ const login = async (req, res) => {
     const { errors: err, doc } = await authService.login(data);
 
     if (doc) {
-      const { token, expiresIn, refreshToken } = doc;
+      const { accessToken, refreshToken } = doc;
 
-      res.setHeader('token', token);
-      res.setHeader('expires-in', expiresIn);
+      res.setHeader('token', accessToken);
       res.setHeader('refresh-token', refreshToken);
       res.setHeader('message', 'You have been successfully logged-in.');
 
